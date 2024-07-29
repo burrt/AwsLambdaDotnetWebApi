@@ -34,11 +34,6 @@ namespace AwsLambdaDotnetWebApi
                 {
                     using var log = new LoggerConfiguration()
                         .ReadFrom.Configuration(Configuration)
-                        .Enrich
-                        .WithSensitiveDataMasking(options =>
-                        {
-                            options.MaskingOperators = [new EmailAddressMaskingOperator()];
-                        })
                         .CreateLogger();
 
                     builder
