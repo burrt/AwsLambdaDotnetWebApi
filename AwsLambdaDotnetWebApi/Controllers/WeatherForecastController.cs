@@ -1,3 +1,4 @@
+using AwsLambdaDotnetWebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AwsLambdaDotnetWebApi.Controllers
@@ -6,10 +7,10 @@ namespace AwsLambdaDotnetWebApi.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
+        private static readonly string[] Summaries =
+        [
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        ];
 
         private readonly ILogger<WeatherForecastController> _logger;
 
@@ -18,6 +19,9 @@ namespace AwsLambdaDotnetWebApi.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Retrieves the weather forecast for the next 5 days.
+        /// </summary>
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {

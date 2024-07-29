@@ -9,6 +9,15 @@
     }
   },
   "profiles": {
+    "API - local": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:7182;http://localhost:5182",
+      "launchUrl": "https://localhost:7182/index.html"
+    },
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
