@@ -1,0 +1,6 @@
+@AwsLambdaDotnetWebApi_HostAddress = http://localhost:5077
+
+GET {{AwsLambdaDotnetWebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
