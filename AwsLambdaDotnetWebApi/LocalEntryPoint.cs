@@ -1,4 +1,6 @@
-﻿namespace AwsLambdaDotnetWebApi
+using Serilog;
+
+namespace AwsLambdaDotnetWebApi
 {
     /// <summary>
     /// The Main function can be used to run the ASP.NET Core application locally using the Kestrel webserver.
@@ -10,11 +12,15 @@
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+                // workaround to use Serilog for HTTP request logging
+                .UseSerilog((_, l) => l.ReadFrom.Configuration(Startup.Configuration))
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+        }
     }
 }

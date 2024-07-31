@@ -1,7 +1,7 @@
-﻿using AwsLambdaDotnetWebApi.Configuration;
+using AwsLambdaDotnetWebApi.Configuration;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Serilog.Enrichers.Sensitive;
 using System.Reflection;
 
 namespace AwsLambdaDotnetWebApi
@@ -9,16 +9,11 @@ namespace AwsLambdaDotnetWebApi
     public class Startup
     {
         public static readonly string? EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        public IConfiguration Configuration { get; }
-
-        public Startup()
-        {
-            Configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{EnvironmentName ?? "Production"}.json", optional: true)
-            .Build();
-        }
+        public static readonly  IConfiguration Configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{EnvironmentName ?? "Production"}.json", optional: true)
+                .Build();
 
         // This method gets called by the runtime. Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
@@ -30,12 +25,20 @@ namespace AwsLambdaDotnetWebApi
                 .Configure<SecretsManagerOptions>(Configuration.GetRequiredSection("Aws:SecretsManager"))
 
                 // setup logging
+                .AddHttpLogging(logging =>
+                {
+                    logging.LoggingFields = HttpLoggingFields.RequestMethod | HttpLoggingFields.RequestPath | HttpLoggingFields.RequestHeaders | HttpLoggingFields.Duration;
+                    // don't redact header values
+                    logging.RequestHeaders.Add("some-header");
+                    logging.RequestBodyLogLimit = 4096;
+                    logging.ResponseBodyLogLimit = 4096;
+                    logging.CombineLogs = true;
+                })
                 .AddLogging(builder =>
                 {
                     using var log = new LoggerConfiguration()
                         .ReadFrom.Configuration(Configuration)
                         .CreateLogger();
-
                     builder
                         .ClearProviders()
                         .AddSerilog(log);
@@ -64,8 +67,11 @@ namespace AwsLambdaDotnetWebApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment _)
         {
+            app.UseHttpLogging();
+            app.UseSerilogRequestLogging();
+
             app.UseSwagger();
             app.UseSwaggerUI(options => 
             {
