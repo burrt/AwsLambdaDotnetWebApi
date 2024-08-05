@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -35,5 +35,13 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.6.2" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.6.2" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Content Include="aws-lambda-tools-production.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>aws-lambda-tools-defaults.json</DependentUpon>
+    </Content>
+    <Content Include="aws-lambda-tools-defaults.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

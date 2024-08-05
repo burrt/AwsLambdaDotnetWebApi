@@ -8,7 +8,7 @@
   "profile": "default",
   "region": "ap-southeast-2",
   "configuration": "Release",
-  "environment-variables": "ASPNETCORE_ENVIRONMENT=Development",
+  "environment-variables": "ASPNETCORE_ENVIRONMENT=Production",
   "function-architecture": "arm64",
   "function-name": "AwsLambdaDotnetWebApi",
   "function-runtime": "dotnet8",
