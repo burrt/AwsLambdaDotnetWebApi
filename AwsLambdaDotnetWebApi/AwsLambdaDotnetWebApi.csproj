@@ -18,6 +18,7 @@
   <ItemGroup>
     <None Include="aws-lambda-tools-production.json">
       <DependentUpon>aws-lambda-tools-defaults.json</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
