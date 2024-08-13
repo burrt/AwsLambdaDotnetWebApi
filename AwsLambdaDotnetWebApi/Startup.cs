@@ -15,7 +15,10 @@ namespace AwsLambdaDotnetWebApi
                 .AddJsonFile($"appsettings.{EnvironmentName ?? "Production"}.json", optional: true)
                 .Build();
 
-        // This method gets called by the runtime. Use this method to add services to the container
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        /// </summary>
+        /// <param name="services">Services to configure.</param>
         public void ConfigureServices(IServiceCollection services)
         {
             services
@@ -66,7 +69,9 @@ namespace AwsLambdaDotnetWebApi
             ;
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment _)
         {
             app.UseHttpLogging();

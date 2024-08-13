@@ -1,10 +1,13 @@
+using Amazon.Lambda.AspNetCoreServer;
+
 namespace AwsLambdaDotnetWebApi
 {
     /// <summary>
-    /// This class extends from APIGatewayProxyFunction which contains the method FunctionHandlerAsync which is the 
+    /// This class extends from <see cref="APIGatewayProxyFunction"/> which contains the method FunctionHandlerAsync which is the 
     /// actual Lambda function entry point. The Lambda handler field should be set to
-    /// 
+    ///
     /// AwsLambdaDotnetWebApi::AwsLambdaDotnetWebApi.LambdaEntryPoint::FunctionHandlerAsync
+    /// 
     /// </summary>
     public class LambdaEntryPoint :
 
@@ -19,11 +22,11 @@ namespace AwsLambdaDotnetWebApi
         // Note: When using the AWS::Serverless::Function resource with an event type of "HttpApi" then payload version 2.0
         // will be the default and you must make Amazon.Lambda.AspNetCoreServer.APIGatewayHttpApiV2ProxyFunction the base class.
 
-        Amazon.Lambda.AspNetCoreServer.APIGatewayProxyFunction
+        APIGatewayProxyFunction
     {
         /// <summary>
         /// The builder has configuration, logging and Amazon API Gateway already configured. The startup class
-        /// needs to be configured in this method using the <see cref="UseStartup{T}()" /> method.
+        /// needs to be configured in this method using the <see cref="UseStartup()" /> method.
         /// </summary>
         /// <param name="builder">The IWebHostBuilder to configure.</param>
         protected override void Init(IWebHostBuilder builder)
