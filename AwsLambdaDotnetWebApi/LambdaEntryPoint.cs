@@ -1,4 +1,5 @@
 using Amazon.Lambda.AspNetCoreServer;
+using Serilog;
 
 namespace AwsLambdaDotnetWebApi
 {
@@ -43,6 +44,8 @@ namespace AwsLambdaDotnetWebApi
         /// <param name="builder">The IHostBuilder to configure.</param>
         protected override void Init(IHostBuilder builder)
         {
+            builder
+                .UseSerilog((_, l) => l.ReadFrom.Configuration(Startup.Configuration));
         }
     }
 }
