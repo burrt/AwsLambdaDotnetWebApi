@@ -175,6 +175,7 @@ jobs:
         run: terraform apply -auto-approve
 
   deploy:
+    name: .NET Lambda tools deploy
     runs-on: ubuntu-latest
     needs: build
     if: false
