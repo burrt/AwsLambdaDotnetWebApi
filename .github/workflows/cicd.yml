@@ -166,6 +166,8 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_GH_API_TOKEN }}
 
       - name: Initialize Terraform
         working-directory: ./infra
