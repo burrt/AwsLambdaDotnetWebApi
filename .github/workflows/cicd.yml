@@ -15,10 +15,10 @@ permissions:
 env:
   AWS_LAMBDA_NAME: AwsLambdaDotnetWebApi
   AWS_REGION : ap-southeast-2
-  RUNNER: ubuntu-latest
 
 jobs:
   build:
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
     - name: Cloning the repo
@@ -55,6 +55,7 @@ jobs:
       run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
   infra_plan:
+    name: Infra setup/plan
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -66,6 +67,9 @@ jobs:
 
       - name: Zip the package
         run: zip -r lambda_package.zip ./build/*
+
+      - name: List files
+        run: ls -lR
 
       - uses: hashicorp/setup-terraform@v3
         with:
@@ -152,7 +156,7 @@ jobs:
             }
 
   infra_apply:
-    name: Terraform Apply
+    name: Deploy
     runs-on: ubuntu-latest
     needs: infra_plan
     if: github.ref == 'refs/heads/main'
