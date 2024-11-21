@@ -160,6 +160,12 @@ jobs:
       - name: Cloning the repo
         uses: actions/checkout@v4
 
+      - name: Build the Lambda deployment package
+        run: dotnet publish -c Release -o ./build
+
+      - name: Zip the package
+        run: zip -r build/lambda_package.zip ./build/*
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
