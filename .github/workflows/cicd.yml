@@ -61,6 +61,12 @@ jobs:
       - name: Cloning the repo
         uses: actions/checkout@v4
 
+      - name: Build the Lambda deployment package
+        run: dotnet publish -c Release -o ./infra/build
+
+      - name: Zip the package
+        run: zip -r lambda_package.zip ./infra/build/*
+
       - uses: hashicorp/setup-terraform@v3
         with:
           cli_config_credentials_token: ${{ secrets.TF_GH_API_TOKEN }}
@@ -80,12 +86,6 @@ jobs:
         id: validate
         working-directory: ./infra
         run: terraform validate -no-color
-
-      - name: Build the Lambda deployment package
-        run: dotnet publish -c Release -o ./infra/build
-
-      - name: Zip the package
-        run: zip -r lambda_package.zip ./infra/build/*
 
       - name: Terraform Plan
         id: plan
