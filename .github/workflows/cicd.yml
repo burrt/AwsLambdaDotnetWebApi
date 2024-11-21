@@ -62,10 +62,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build the Lambda deployment package
-        run: dotnet publish -c Release -o ./infra/build
+        run: dotnet publish -c Release -o ./build
 
       - name: Zip the package
-        run: zip -r lambda_package.zip ./infra/build/*
+        run: zip -r lambda_package.zip ./build/*
 
       - uses: hashicorp/setup-terraform@v3
         with:
