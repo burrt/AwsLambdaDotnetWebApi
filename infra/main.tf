@@ -2,7 +2,7 @@ terraform {
   cloud {
     organization = "personal-burrt"
     workspaces {
-      name = "template-examples"
+      name = "template-github-actions"
     }
   }
 
