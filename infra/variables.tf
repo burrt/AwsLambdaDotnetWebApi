@@ -7,7 +7,7 @@ variable "lambda_name" {
 variable "lambda_role" {
     description = "Lambda IAM role to assume"
     type = string
-    default = "AwsLambdaDotnetWebApiRole"
+    default = "arn:aws:iam::398018169858:role/AwsLambdaDotnetWebApiRole"
 }
 
 variable "lambda_function_handler" {
