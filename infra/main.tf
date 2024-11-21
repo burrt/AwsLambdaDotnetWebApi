@@ -32,7 +32,7 @@ resource "aws_lambda_function" "aws_lambda_dotnet_web_api" {
 
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
-  filename      = "build/lambda_package/.zip"
+  filename      = "./build/lambda_package/.zip"
   source_code_hash = filebase64sha256("./build/lambda_package.zip")
 
   ephemeral_storage {
