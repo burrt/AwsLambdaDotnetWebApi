@@ -19,4 +19,5 @@ variable "lambda_function_handler" {
 variable "git_commit_sha" {
   description = "The Git commit SHA for the configuration version."
   type        = string
+  default     = ""
 }
