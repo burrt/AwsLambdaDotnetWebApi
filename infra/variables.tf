@@ -15,3 +15,8 @@ variable "lambda_function_handler" {
     type = string
     default = "AwsLambdaDotnetWebApi::AwsLambdaDotnetWebApi.LambdaEntryPoint::FunctionHandlerAsync"
 }
+
+variable "git_commit_sha" {
+  description = "The Git commit SHA for the configuration version."
+  type        = string
+}

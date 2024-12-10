@@ -1,19 +1,18 @@
 terraform {
+  required_version = ">= 1.9.8"
+
   cloud {
     organization = "personal-burrt"
     workspaces {
       name = "template-github-actions"
     }
   }
-
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.76"
     }
   }
-
-  required_version = ">= 1.2.0"
 }
 
 provider "aws" {
@@ -34,6 +33,10 @@ resource "aws_lambda_function" "aws_lambda_dotnet_web_api" {
   # path.module in the filename.
   filename      = "../build/lambda_package.zip"
   source_code_hash = filebase64sha256("../build/lambda_package.zip")
+
+  tags = {
+    "GIT_COMMIT" = var.git_commit_sha
+  }
 
   ephemeral_storage {
     size = 512
