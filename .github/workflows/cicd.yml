@@ -63,7 +63,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build the Lambda deployment package
-        run: dotnet publish -c Release -o ./build
+        run: dotnet publish ${{ env.AWS_LAMBDA_NAME }} -c Release -o ./build
 
       - name: Zip the package
         run: zip -r build/lambda_package.zip ./build/*
@@ -161,7 +161,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build the Lambda deployment package
-        run: dotnet publish -c Release -o ./build
+        run: dotnet publish ${{ env.AWS_LAMBDA_NAME }} -c Release -o ./build
 
       - name: Zip the package
         run: zip -r build/lambda_package.zip ./build/*
