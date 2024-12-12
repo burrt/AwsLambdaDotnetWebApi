@@ -35,7 +35,7 @@ resource "aws_lambda_function" "aws_lambda_dotnet_web_api" {
   source_code_hash = filebase64sha256("../build/lambda_package.zip")
 
   tags = {
-    "GIT_COMMIT" = var.git_commit_sha
+    "GIT_COMMIT" = vars.TFC_CONFIGURATION_VERSION_GIT_COMMIT_SHA
   }
 
   ephemeral_storage {

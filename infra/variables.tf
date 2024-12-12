@@ -21,3 +21,7 @@ variable "git_commit_sha" {
   type        = string
   default     = ""
 }
+
+variable "TFC_CONFIGURATION_VERSION_GIT_COMMIT_SHA" {
+  type = string
+}
