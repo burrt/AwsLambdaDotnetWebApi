@@ -155,7 +155,7 @@ jobs:
     name: Infra deploy
     runs-on: ubuntu-latest
     needs: infra_plan
-    if: github.event_name == 'pull_request'
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Cloning the repo
         uses: actions/checkout@v4
