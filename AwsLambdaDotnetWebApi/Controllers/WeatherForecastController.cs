@@ -14,7 +14,6 @@ namespace AwsLambdaDotnetWebApi.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger = logger;
 
-
         /// <summary>
         /// Retrieves the weather forecast for the next 5 days.
         /// </summary>

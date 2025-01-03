@@ -1,6 +1,5 @@
 terraform {
   required_version = ">= 1.9.8"
-
   cloud {
     organization = "personal-burrt"
     workspaces {
@@ -28,16 +27,13 @@ resource "aws_lambda_function" "aws_lambda_dotnet_web_api" {
   architectures = [ "arm64" ]
   memory_size   = 512
   timeout       = 30
-
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
   filename      = "../build/lambda_package.zip"
   source_code_hash = filebase64sha256("../build/lambda_package.zip")
-
   tags = {
     "GIT_COMMIT" = "TODO"
   }
-
   ephemeral_storage {
     size = 512
   }
