@@ -2,6 +2,7 @@ using AwsLambdaDotnetWebApi.Configuration;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using StackExchange.Redis;
 using System.Reflection;
 
 namespace AwsLambdaDotnetWebApi
@@ -58,15 +59,22 @@ namespace AwsLambdaDotnetWebApi
                         Description = "Running on AWS Lambda!"
                     });
 
-                    // 
                     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
                 })
 
-                .AddControllers()
+                .AddControllers();
 
-            // register services
-            ;
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetSection("Aws")["RedisHostname"];
+                options.InstanceName = EnvironmentName;
+                options.ConfigurationOptions = new ConfigurationOptions()
+                {
+                    EndPoints = new EndPointCollection { Configuration.GetSection("Aws")["RedisHostname"]! },
+                    Ssl = true
+                };
+            });
         }
 
         /// <summary>
@@ -78,10 +86,10 @@ namespace AwsLambdaDotnetWebApi
             app.UseSerilogRequestLogging();
 
             app.UseSwagger();
-            app.UseSwaggerUI(options => 
+            app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-                options.RoutePrefix = string.Empty; 
+                options.RoutePrefix = string.Empty;
             });
 
             app.UseHttpsRedirection();
