@@ -1,4 +1,6 @@
+using Amazon.SecretsManager.Extensions.Caching;
 using AwsLambdaDotnetWebApi.Configuration;
+using AwsLambdaDotnetWebApi.Services;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -62,19 +64,53 @@ namespace AwsLambdaDotnetWebApi
                     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
                 })
-
-                .AddControllers();
-
-            services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = Configuration.GetSection("Aws")["RedisHostname"];
-                options.InstanceName = EnvironmentName;
-                options.ConfigurationOptions = new ConfigurationOptions()
+                .AddStackExchangeRedisCache(options =>
                 {
-                    EndPoints = new EndPointCollection { Configuration.GetSection("Aws")["RedisHostname"]! },
-                    Ssl = true
-                };
-            });
+                    options.Configuration = Configuration.GetSection("Aws:ElastiCache")["RedisHostname"];
+                    options.InstanceName = EnvironmentName;
+
+                    var cache = new SecretsManagerCache();
+                    var redisUserPassword = Task
+                        .Run(async () => await cache.GetSecretString(Configuration.GetSection("Aws:SecretsManager")["RedisUserSecret"]).ConfigureAwait(false))
+                        .GetAwaiter()
+                        .GetResult();
+
+                    options.ConfigurationOptions = new ConfigurationOptions()
+                    {
+                        EndPoints = new EndPointCollection { Configuration.GetSection("Aws:ElastiCache")["RedisHostname"]! },
+                        User = "web-api-lambda-user",
+                        Password = redisUserPassword,
+                        Ssl = true,
+                        SyncTimeout = 1000,
+                        AsyncTimeout = 1000,
+                        ConnectTimeout = 1000,
+                    };
+                });
+
+                services.AddControllers();
+
+            // services.AddStackExchangeRedisCache(options =>
+            // {
+            //     options.Configuration = Configuration.GetSection("Aws:ElastiCache")["RedisHostname"];
+            //     options.InstanceName = EnvironmentName;
+
+            //     var cache = new SecretsManagerCache();
+            //     var redisUserPassword = Task
+            //         .Run(async () => await cache.GetSecretString(Configuration.GetSection("Aws:SecretsManager")["RedisUserSecret"]).ConfigureAwait(false))
+            //         .GetAwaiter()
+            //         .GetResult();
+
+            //     options.ConfigurationOptions = new ConfigurationOptions()
+            //     {
+            //         EndPoints = new EndPointCollection { Configuration.GetSection("Aws:ElastiCache")["RedisHostname"]! },
+            //         User = "web-api-lambda-user",
+            //         Password = redisUserPassword,
+            //         Ssl = true,
+            //         SyncTimeout = 1000,
+            //         AsyncTimeout = 1000,
+            //         ConnectTimeout = 1000,
+            //     };
+            // });
         }
 
         /// <summary>
@@ -100,6 +136,8 @@ namespace AwsLambdaDotnetWebApi
             {
                 endpoints.MapControllers();
             });
+
+            app.UseStaticFiles();
         }
     }
 }

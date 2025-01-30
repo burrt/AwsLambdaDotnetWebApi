@@ -18,19 +18,38 @@ provider "aws" {
   region = "ap-southeast-2"
 }
 
+data "terraform_remote_state" "network" {
+  backend = "remote"
+
+  config = {
+    organization = "personal-burrt"
+    workspaces = {
+      name = "shared-services"
+    }
+  }
+}
+
+# TODO: add VPC, security groups, potentially resource based policy
 resource "aws_lambda_function" "aws_lambda_dotnet_web_api" {
   function_name = var.lambda_name
-  role          = var.lambda_role
+  role          = aws_iam_role.lambda-dotnet-web-api-role.arn
   handler       = var.lambda_function_handler
   package_type  = "Zip"
   runtime       = "dotnet8"
-  architectures = [ "arm64" ]
+  architectures = ["arm64"]
   memory_size   = 512
   timeout       = 30
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
-  filename      = "../build/lambda_package.zip"
+  filename         = "../build/lambda_package.zip"
   source_code_hash = filebase64sha256("../build/lambda_package.zip")
+  vpc_config {
+    subnet_ids = [
+      data.terraform_remote_state.network.outputs.subnet_private_1_id,
+      data.terraform_remote_state.network.outputs.subnet_private_2_id
+    ]
+    security_group_ids = [data.terraform_remote_state.network.outputs.sec-group-lambda-dotnet-web-api]
+  }
   tags = {
     "GIT_COMMIT" = "TODO"
   }
