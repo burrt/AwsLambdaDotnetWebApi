@@ -26,7 +26,6 @@ namespace AwsLambdaDotnetWebApi
         /// <param name="services">Services to configure.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-                services.AddControllers();
             services
                 // setup configuration
                 .AddSingleton(Configuration)
@@ -68,6 +67,7 @@ namespace AwsLambdaDotnetWebApi
                     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
                 });
 
+            services.AddControllers();
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = Configuration.GetSection("Aws:ElastiCache")["RedisHostname"];
@@ -76,12 +76,10 @@ namespace AwsLambdaDotnetWebApi
                 var secretsClient = new AmazonSecretsManagerClient(RegionEndpoint.GetBySystemName(Configuration.GetSection("Aws")["Region"]));
                 var request = new GetSecretValueRequest { SecretId = Configuration.GetSection("Aws:SecretsManager")["RedisUserSecret"] };
 
-                System.Console.WriteLine("fetching secrets for redis pwd");
                 var redisUserPassword = Task
                     .Run(async () => await secretsClient.GetSecretValueAsync(request).ConfigureAwait(false))
                     .GetAwaiter()
                     .GetResult();
-                System.Console.WriteLine("finished fetching secrets for redis pwd");
 
                 options.ConfigurationOptions = new ConfigurationOptions()
                 {
