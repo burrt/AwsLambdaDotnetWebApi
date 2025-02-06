@@ -163,15 +163,6 @@ jobs:
       - name: Cloning the repo
         uses: actions/checkout@v4
 
-      - name: Setup .NET - uses global.json
-        uses: actions/setup-dotnet@v4
-
-      - name: Build the Lambda deployment package
-        run: dotnet publish ${{ env.AWS_LAMBDA_NAME }} -c Release -o ./build
-
-      - name: Zip the package
-        run: zip -r build/lambda_package.zip ./build/*
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -184,3 +175,23 @@ jobs:
       - name: Terraform Apply
         working-directory: ./infra
         run: terraform apply -auto-approve
+
+      - name: Setup .NET - uses global.json
+        uses: actions/setup-dotnet@v4
+
+      - name: Setup AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::398018169858:role/GitHubActionsRole
+          role-session-name: GitHubActionsRole
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup .NET Lambda tools
+        run: dotnet tool install --global Amazon.Lambda.Tools
+
+      - name: Deploying Lambda
+        working-directory: ./${{ env.AWS_LAMBDA_NAME }}
+        run: dotnet lambda deploy-function ${{ env.AWS_LAMBDA_NAME }} --config-file aws-lambda-tools-production.json
+
+      - name: Tagging Lambda with commit $GITHUB_SHA
+        run: aws lambda tag-resource --resource arn:aws:lambda:${{ env.AWS_REGION }}:398018169858:function:${{ env.AWS_LAMBDA_NAME }} --tags GIT_COMMIT=$GITHUB_SHA
