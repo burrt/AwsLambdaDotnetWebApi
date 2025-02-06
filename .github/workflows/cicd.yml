@@ -163,6 +163,9 @@ jobs:
       - name: Cloning the repo
         uses: actions/checkout@v4
 
+      - name: Setup .NET - uses global.json
+        uses: actions/setup-dotnet@v4
+
       - name: Build the Lambda deployment package
         run: dotnet publish ${{ env.AWS_LAMBDA_NAME }} -c Release -o ./build
 
