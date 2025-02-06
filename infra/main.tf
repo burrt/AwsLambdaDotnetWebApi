@@ -60,4 +60,7 @@ resource "aws_lambda_function" "aws_lambda_dotnet_web_api" {
       ASPNETCORE_ENVIRONMENT = "Production"
     }
   }
+  lifecycle {
+    ignore_changes = [ source_code_hash, tags ]
+  }
 }
