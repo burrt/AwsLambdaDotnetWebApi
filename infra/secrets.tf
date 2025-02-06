@@ -1,6 +1,6 @@
 resource "aws_secretsmanager_secret" "sm-redis-user-secret" {
-  name = "templates/${var.lambda_name}/redis-user-secret"
-  description = "Redis user secret for the .NET Web API Lambda"
+  name                    = "templates/${var.lambda_name}/redis-user-secret"
+  description             = "Redis user secret for the .NET Web API Lambda"
   recovery_window_in_days = 0
 }
 
