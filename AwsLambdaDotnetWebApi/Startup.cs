@@ -1,7 +1,12 @@
+using Amazon;
+using Amazon.SecretsManager;
+using Amazon.SecretsManager.Extensions.Caching;
+using Amazon.SecretsManager.Model;
 using AwsLambdaDotnetWebApi.Configuration;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using StackExchange.Redis;
 using System.Reflection;
 
 namespace AwsLambdaDotnetWebApi
@@ -58,15 +63,35 @@ namespace AwsLambdaDotnetWebApi
                         Description = "Running on AWS Lambda!"
                     });
 
-                    // 
                     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-                })
+                });
 
-                .AddControllers()
+            services.AddControllers();
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetSection("Aws:ElastiCache")["RedisHostname"];
+                options.InstanceName = EnvironmentName;
 
-            // register services
-            ;
+                var secretsClient = new AmazonSecretsManagerClient(RegionEndpoint.GetBySystemName(Configuration.GetSection("Aws")["Region"]));
+                var request = new GetSecretValueRequest { SecretId = Configuration.GetSection("Aws:SecretsManager")["RedisUserSecret"] };
+
+                var redisUserPassword = Task
+                    .Run(async () => await secretsClient.GetSecretValueAsync(request).ConfigureAwait(false))
+                    .GetAwaiter()
+                    .GetResult();
+
+                options.ConfigurationOptions = new ConfigurationOptions()
+                {
+                    EndPoints = new EndPointCollection { Configuration.GetSection("Aws:ElastiCache")["RedisHostname"]! },
+                    User = "web-api-lambda-user",
+                    Password = redisUserPassword.SecretString,
+                    Ssl = true,
+                    SyncTimeout = 1000,
+                    AsyncTimeout = 1000,
+                    ConnectTimeout = 1000,
+                };
+            });
         }
 
         /// <summary>
@@ -78,10 +103,10 @@ namespace AwsLambdaDotnetWebApi
             app.UseSerilogRequestLogging();
 
             app.UseSwagger();
-            app.UseSwaggerUI(options => 
+            app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-                options.RoutePrefix = string.Empty; 
+                options.RoutePrefix = string.Empty;
             });
 
             app.UseHttpsRedirection();

@@ -13,7 +13,7 @@
   "function-name": "AwsLambdaDotnetWebApi",
   "function-runtime": "dotnet8",
   "function-memory-size": 512,
-  "function-timeout": 30,
+  "function-timeout": 5,
   "function-handler": "AwsLambdaDotnetWebApi::AwsLambdaDotnetWebApi.LambdaEntryPoint::FunctionHandlerAsync",
-  "function-role": "AwsLambdaDotnetWebApiRole"
+  "function-role": "lambda-dotnet-web-api-role"
 }
