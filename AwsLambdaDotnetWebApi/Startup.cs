@@ -52,6 +52,7 @@ namespace AwsLambdaDotnetWebApi
                         .AddSerilog(log);
                 })
 
+                // TODO: replace with Open API package
                 // setup Swagger
                 .AddEndpointsApiExplorer()
                 .AddSwaggerGen(options =>
